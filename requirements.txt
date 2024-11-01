@@ -1,6 +1,5 @@
 Flask
 Gunicorn
-arribista
-conector mysql-python
-Pito
-Matraz
+pusher
+mysql-connector-python
+pytz
