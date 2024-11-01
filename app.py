@@ -21,7 +21,7 @@ app = Flask(__name__)
 def index():
     logging.info("Cargando página principal")
     con.close()
-    return render_template("reservahbitacion.html")
+    return render_template("reservahabitacion.html")
 
 # Crear o actualizar un usuario
 @app.route("/usuarios/guardar", methods=["POST"])
