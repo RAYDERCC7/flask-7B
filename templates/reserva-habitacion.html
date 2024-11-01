@@ -1,1 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Usuarios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>CRUD Usuarios</h1>
 
+        <!-- Formulario para crear o actualizar usuarios -->
+        <form id="frmUsuario" method="post">
+            <input type="hidden" id="id_usuario" name="id_usuario">
+            <div class="mb-3">
+                <label for="nombre_usuario" class="form-label">Nombre de Usuario</label>
+                <input type="text" id="nombre_usuario" name="nombre_usuario" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="contrasena" class="form-label">Contraseña</label>
+                <input type="password" id="contrasena" name="contrasena" class="form-control">
+            </div>
+            <button id="guardar" class="btn btn-primary">Guardar</button>
+            <button type="reset" class="btn btn-link">Cancelar</button>
+        </form>
+
+        <!-- Tabla para mostrar los usuarios -->
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre de Usuario</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyUsuarios"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Cargar usuarios al cargar la página
+        function cargarUsuarios() {
+            $.get("/usuarios", function (usuarios) {
+                $("#tbodyUsuarios").html("");
+                usuarios.forEach(function (usuario) {
+                    $("#tbodyUsuarios").append(`
+                        <tr>
+                            <td>${usuario.Id_Usuario}</td>
+                            <td>${usuario.Nombre_Usuario}</td>
+                            <td>
+                                <button class="btn btn-primary btn-editar" data-id="${usuario.Id_Usuario}">Editar</button>
+                                <button class="btn btn-danger btn-eliminar" data-id="${usuario.Id_Usuario}">Eliminar</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+        }
+
+        // Editar usuario usando ruta sin query string
+        $(document).on("click", ".btn-editar", function () {
+            const id_usuario = $(this).data("id");
+            $.get(`/usuarios/editar/${id_usuario}`, function (usuario) {
+                $("#id_usuario").val(usuario.Id_Usuario);
+                $("#nombre_usuario").val(usuario.Nombre_Usuario);
+                $("#contrasena").val(usuario.Contrasena);
+            });
+        });
+
+        // Eliminar usuario usando ID en la URL
+        $(document).on("click", ".btn-eliminar", function () {
+            if (!confirm("¿Seguro que deseas eliminar este usuario?")) return;
+            const id_usuario = $(this).data("id");
+            $.post(`/usuarios/eliminar/${id_usuario}`, function () {
+                cargarUsuarios();
+            });
+        });
+
+        // Guardar o actualizar usuario
+        $("#frmUsuario").submit(function (event) {
+            event.preventDefault();
+            const url = $("#id_usuario").val() ? "/usuarios/guardar" : "/usuarios/guardar";
+            $.post(url, $(this).serialize(), function () {
+                $("#frmUsuario").get(0).reset();
+                cargarUsuarios();
+            });
+        });
+
+        // Cargar usuarios al inicio
+        $(document).ready(function () {
+            cargarUsuarios();
+
+            // Pusher para actualizaciones en tiempo real
+            const pusher = new Pusher("970a7d4d6af4b86adcc6", { cluster: "us2" });
+            const channel = pusher.subscribe("canalUsuarios");
+            channel.bind("actualizacion", function () {
+                cargarUsuarios();
+            });
+        });
+    </script>
+</body>
+</html>
