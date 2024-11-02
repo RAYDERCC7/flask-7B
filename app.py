@@ -58,9 +58,9 @@ def eliminar_usuario(id_usuario):
 # Notificar a través de Pusher sobre actualizaciones en la tabla de usuarios
 def notificar_actualizacion_usuarios():
     pusher_client = pusher.Pusher(
-        app_id="1874485",
-        key="970a7d4d6af4b86adcc6",
-        secret="2e26ccd3273ad909a49d",
+        app_id="1889712",
+        key="3a925c9457e124cf2fbb",
+        secret="d5e38d90ae87e6b3f09a",
         cluster="us2",
         ssl=True
     )
