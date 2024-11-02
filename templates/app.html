@@ -67,7 +67,7 @@ orm>
             cargarUsuarios();
 
             // Pusher para actualizaciones en tiempo real
-            const pusher = new Pusher("970a7d4d6af4b86adcc6", { cluster: "us2" });
+            const pusher = new Pusher("3a925c9457e124cf2fbb", { cluster: "us2" });
             const channel = pusher.subscribe("canalUsuarios");
             channel.bind("actualizacion", function () {
                 cargarUsuarios();
