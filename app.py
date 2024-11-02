@@ -57,6 +57,7 @@ def eliminar_usuario(id_usuario):
 
 # Notificar a través de Pusher sobre actualizaciones en la tabla de usuarios
 def notificar_actualizacion_usuarios():
+    import pusher
     pusher_client = pusher.Pusher(
         app_id="1889712",
         key="3a925c9457e124cf2fbb",
