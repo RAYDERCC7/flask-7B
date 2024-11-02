@@ -1,58 +1,4 @@
-from flask import Flask, render_template, request, jsonify, make_response
-import mysql.connector
-import pusher
-import logging
-
-# Configura el logger de Flask
-logging.basicConfig(level=logging.INFO)
-
-# Conexión a la base de datos
-con = mysql.connector.connect(
-    host="185.232.14.52",
-    database="u760464709_tst_sep",
-    user="u760464709_tst_sep_usr",
-    password="dJ0CIAFF="
-)
-
-app = Flask(__name__)
-
-# Página principal que carga el CRUD de usuarios
-@app.route("/")
-def index():
-    logging.info("Cargando página principal")
-    con.close()
-    return render_template("h.html")
-
-# Crear o actualizar un usuario
-@app.route("/usuarios/guardar", methods=["POST"])
-def usuariosGuardar():
-    if not con.is_connected():
-        con.reconnect()
-
-    id_usuario = request.form.get("id_usuario")
-    nombre_usuario = request.form["nombre_usuario"]
-    contrasena = request.form["contrasena"]
-
-    cursor = con.cursor()
-    if id_usuario:  # Actualizar
-        sql = """
-        UPDATE tst0_usuarios SET Nombre_Usuario = %s, Contrasena = %s WHERE Id_Usuario = %s
-        """
-        val = (nombre_usuario, contrasena, id_usuario)
-        logging.info(f"Actualizando usuario con ID: {id_usuario}")
-    else:  # Crear nuevo usuario
-        sql = """
-        INSERT INTO tst0_usuarios (Nombre_Usuario, Contrasena) VALUES (%s, %s)
-        """
-        val = (nombre_usuario, contrasena)
-        logging.info(f"Creando nuevo usuario: {nombre_usuario}")
-
-    cursor.execute(sql, val)
-    con.commit()
-    cursor.close()
-    con.close()
-
-    notificar_actualizacion_usuarios()
+acion_usuarios()
 
     return make_response(jsonify({"message": "Usuario guardado exitosamente"}))
 
@@ -123,4 +69,3 @@ def notificar_actualizacion_usuarios():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
